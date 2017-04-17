@@ -4,16 +4,23 @@ Yet another MPD client for NodeJS.
 
 Provides Promise-based API for interaction with MPD server.
 
+# Init
+
+```sh
+npm i
+```
+
+Alternate variant via yarn:
+
+```sh
+yarn install
+```
+
+
 # Build
 
-Build via tsc:
-```
-tsc src/*.ts --outDir dist/src
-```
-
-Or use gulpfile.js from repo:
-```
-gulp default
+```sh
+npm run build
 ```
 
 # Usage
