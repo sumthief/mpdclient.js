@@ -26,9 +26,8 @@ npm run build
 # Usage
 
 ```ecmascript 6
-const mpdclient = require('mpdclient.js');
-
-let client = new mpdclient.MPDClient('localhost', 6600),
+const mpdclient = require('mpdclient.js'),
+  client = new mpdclient.MPDClient('localhost', 6600),
   // Also you can create CommandList via mpdclient.MPDCommandList.
   command = new mpdclient.MPDCommand('status');
 client.execute(command).then(

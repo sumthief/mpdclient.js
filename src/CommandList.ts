@@ -1,20 +1,22 @@
-import Command = require('./Command');
-class CommandList {
+import { IExecutable } from "./IExecutable";
+import { Command } from "./Command";
+
+export class CommandList implements IExecutable {
 
   /**
-   * Result query which will be send to MPD.
+   * @inheritDoc
    */
-  private query;
+  public query: string;
 
   /**
    * Array of Command instances.
    */
-  private commands;
+  private commands: Command[];
 
   /**
    * Execution mode. Allow values are: COMMAND_LIST_BEGIN and COMMAND_LIST_OK_BEGIN.
    */
-  private mode;
+  private mode: string;
 
   /**
    * One of allowed modes for work with command list in MPD.
@@ -54,7 +56,7 @@ class CommandList {
    * Create command list.
    *
    * @param {Array} commands
-   *   Array of MPDCommand objects.
+   *   Array of Command objects.
    * @param {string} mode
    *   Mode of command list execution. This param impact on response returned from MPD.
    *
@@ -63,7 +65,7 @@ class CommandList {
    *
    * @see https://www.musicpd.org/doc/protocol/command_lists.html for details.
    */
-  constructor(commands: Array<Command>, mode: string = CommandList.COMMAND_LIST_BEGIN) {
+  constructor(commands: Command[], mode: string = CommandList.COMMAND_LIST_BEGIN) {
     this.commands = commands;
     this.mode = mode;
   }
@@ -74,7 +76,7 @@ class CommandList {
    * @returns {Array}
    *   Commands array.
    */
-  public getCommands() {
+  public getCommands(): Command[] {
     return this.commands;
   }
 
@@ -84,22 +86,17 @@ class CommandList {
    * @returns {string}
    *   Mode.
    */
-  public getMode() {
+  public getMode(): string {
     return this.mode;
   }
 
   /**
-   * Query builder.
-   *
-   * Gets all commands and builds summary query. Also adds necessary wrappers.
-   *
-   * @returns {string}
-   *   Built query string.
+   * @inheritDoc
    */
-  public buildQuery() {
+  public buildQuery(): string {
     if (!this.query) {
-      let chunks: Array<string> = [ this.getMode() ];
-      this.getCommands().forEach((value, index) => {
+      let chunks: string[] = [ this.getMode() ];
+      this.getCommands().forEach((value: Command, index: number) => {
         chunks.push(value.buildQuery());
       });
       chunks.push(CommandList.COMMAND_LIST_END);
@@ -110,5 +107,3 @@ class CommandList {
   }
 
 }
-
-export = CommandList;

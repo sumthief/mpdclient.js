@@ -4,7 +4,7 @@
  * This will allow us to handle specific to MPD errors
  * separately from NodeJS and other errors.
  */
-class Error {
+export class Error {
 
   /**
    * Error code number.
@@ -48,5 +48,3 @@ class Error {
   }
 
 }
-
-export = Error;

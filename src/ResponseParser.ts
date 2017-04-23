@@ -1,8 +1,9 @@
-import Command = require('./Command');
-import CommandList = require('./CommandList');
-import MPDError = require('./Error');
+import { Command } from "./Command";
+import { CommandList } from "./CommandList";
+import { Error } from "./Error";
+import { IExecutable } from "./IExecutable";
 
-class ResponseParser {
+export class ResponseParser {
 
   /**
    * Response received from MPD server.
@@ -19,9 +20,9 @@ class ResponseParser {
    *
    * @type {RegExp}
    */
-  static readonly RESPONSE_PARSER_ERROR_PATTERN = /^ACK\s\[(\d+)@([^\]]+)\]\s\{([^\}]*)\}\s(.+)$/gm;
+  static readonly RESPONSE_PARSER_ERROR_PATTERN: RegExp = /^ACK\s\[(\d+)@([^\]]+)\]\s\{([^\}]*)\}\s(.+)$/gm;
 
-  constructor(response: string, command: any) {
+  constructor(response: string, command: IExecutable) {
     this.response = response;
     this.command = command;
   }
@@ -40,7 +41,7 @@ class ResponseParser {
   public parse(resolve: any = null, reject: any = null) {
     let errorInfo: any = ResponseParser.RESPONSE_PARSER_ERROR_PATTERN.exec(this.response);
     if (errorInfo) {
-      reject(new MPDError(errorInfo));
+      reject(new Error(errorInfo));
     }
 
     this.response = this.response
@@ -128,7 +129,7 @@ class ResponseParser {
    * @todo: Check other commands output.
    * @todo: Maybe it should be generated when server started for reducing first request handle time.
    */
-  private getCommandDelimiters() {
+  private getCommandDelimiters(): any[] {
     let data = global['mpdCommandDelimiters'] || {};
     if (~Object.keys(data).length) {
       [
@@ -165,7 +166,7 @@ class ResponseParser {
    *
    * @see getCommandDelimiters().
    */
-  private parseResponse(commandDelimiters: Array<string>) {
+  private parseResponse(commandDelimiters: string[]): object[] {
     let result = [];
     let obj = {};
     this.response
@@ -200,5 +201,3 @@ class ResponseParser {
   }
 
 }
-
-export = ResponseParser;

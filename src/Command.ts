@@ -1,35 +1,31 @@
-class Command {
+import {IExecutable} from "./IExecutable";
+
+export class Command implements IExecutable {
 
   /**
-   * Result query which will be send to MPD.
+   * @inheritDoc
    */
-  private query;
-
-  /**
-   * Arguments passed to constructor.
-   */
-  private args;
+  public query: string;
 
   /**
    * Arguments passed to constructor.
    */
-  private command;
+  private args: any[];
 
-  constructor(command, args = []) {
+  /**
+   * Arguments passed to constructor.
+   */
+  private command: string;
+
+  constructor(command: string, args: any[] = []) {
     this.command = command.trim();
     this.args = args;
   }
 
   /**
-   * Build query.
-   *
-   * Command should be first in query row. After command should follow space\tab all
-   * arguments wrapped by quotes and separated by space\tab.
-   *
-   * @returns {any}
-   *   Command instance.
+   * @inheritDoc
    */
-  public buildQuery() {
+  public buildQuery(): string {
     if (!this.query) {
       let chunks = [this.command];
       this.args.forEach((value, index) => {
@@ -47,7 +43,7 @@ class Command {
    * @returns {any}
    *   Array of args.
    */
-  public getArgs() {
+  public getArgs(): any[] {
     return this.args;
   }
 
@@ -57,10 +53,8 @@ class Command {
    * @returns {any}
    *   Command string.
    */
-  public getCommand() {
+  public getCommand(): string {
     return this.command;
   }
 
 }
-
-export = Command;

@@ -1,24 +1,23 @@
 /// <reference.d='/node_modules/@types/node/index.d.ts' />
 /// <reference.d='/node_modules/@types/es6-promise/index.d.ts' />
 
-import net = require('net');
-import Command = require('./Command');
-import CommandList = require('./CommandList');
-import ResponseParser = require('./ResponseParser');
+import { IExecutable } from "./IExecutable";
+import { ResponseParser } from "./ResponseParser";
+import * as net from "net";
 
-class Client {
+export class Client {
 
   // @todo: Add tracking of idle status.
 
   /**
    * Hostname where MPD server started.
    */
-  private host;
+  private host: string;
 
   /**
    * Port which MPD server listens.
    */
-  private port;
+  private port: number;
 
   constructor(host: string, port: number) {
     this.host = host;
@@ -41,7 +40,7 @@ class Client {
       socket.setEncoding('utf8');
 
       // Handle socket events.
-      socket.on('data', (data) => {
+      socket.on('data', (data: string) => {
         // Because there are can be multiple command invocation for the same client instance.
         // So it should be local variable passed as result to resolve callback.
         resolve(socket);
@@ -61,23 +60,18 @@ class Client {
    * @returns {Promise<T>|Promise}
    *   Promise which will return parsed response or it will reject an error.
    */
-  public execute(command: any) {
-    return new Promise((resolve, reject) => {
+  public execute(command: IExecutable) {
+    return new Promise((resolve: any, reject: any) => {
       // Connect to sever and if success execute an command and close socket.
       this
         .connect()
         .then(
           (socket: any) => {
             let result = '';
-
-            // Need to send FIN packet as we don't want write something else.
-            socket.end(command.buildQuery());
-
-            // Handle socket events.
-            socket.on('data', (data) => {
+            socket.on('data', (data: string) => {
               result += data;
             });
-            socket.on('error', (error) => {
+            socket.on('error', (error: any) => {
               reject(error);
             });
             socket.on('end', () => {
@@ -85,6 +79,9 @@ class Client {
               let responseParser = new ResponseParser(result, command);
               responseParser.parse(resolve, reject);
             });
+
+            // Need to send FIN packet as we don't want to write something else.
+            socket.end(command.buildQuery());
           },
           (error: any) => {
             reject(error);
@@ -93,5 +90,3 @@ class Client {
     });
   }
 }
-
-export = Client;
