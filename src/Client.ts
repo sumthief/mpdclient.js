@@ -9,20 +9,7 @@ export class Client {
 
   // @todo: Add tracking of idle status.
 
-  /**
-   * Hostname where MPD server started.
-   */
-  private host: string;
-
-  /**
-   * Port which MPD server listens.
-   */
-  private port: number;
-
-  constructor(host: string, port: number) {
-    this.host = host;
-    this.port = port;
-  }
+  constructor(private host: string, private port: number) { }
 
   /**
    * Create socket; connect and handle base response from server.

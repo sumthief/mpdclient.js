@@ -9,16 +9,6 @@ export class CommandList implements IExecutable {
   public query: string;
 
   /**
-   * Array of Command instances.
-   */
-  private commands: Command[];
-
-  /**
-   * Execution mode. Allow values are: COMMAND_LIST_BEGIN and COMMAND_LIST_OK_BEGIN.
-   */
-  private mode: string;
-
-  /**
    * One of allowed modes for work with command list in MPD.
    *
    * If this one will chosen then MPD will return response of command list
@@ -65,10 +55,7 @@ export class CommandList implements IExecutable {
    *
    * @see https://www.musicpd.org/doc/protocol/command_lists.html for details.
    */
-  constructor(commands: Command[], mode: string = CommandList.COMMAND_LIST_BEGIN) {
-    this.commands = commands;
-    this.mode = mode;
-  }
+  constructor(private commands: Command[], private mode: string = CommandList.COMMAND_LIST_BEGIN) { }
 
   /**
    * Getter for commands.

@@ -7,20 +7,7 @@ export class Command implements IExecutable {
    */
   public query: string;
 
-  /**
-   * Arguments passed to constructor.
-   */
-  private args: any[];
-
-  /**
-   * Arguments passed to constructor.
-   */
-  private command: string;
-
-  constructor(command: string, args: any[] = []) {
-    this.command = command.trim();
-    this.args = args;
-  }
+  constructor(private command: string, private args: any[] = []) { }
 
   /**
    * @inheritDoc

@@ -7,26 +7,6 @@
 export class Error {
 
   /**
-   * Error code number.
-   */
-  private code: number;
-
-  /**
-   * Command which failed.
-   */
-  private cmd: string;
-
-  /**
-   * Error text.
-   */
-  private text: string;
-
-  /**
-   * Command position (actual only for command_lists, 0 in any cases for command).
-   */
-  private cmdPos: number;
-
-  /**
    * Built markup which is ready to output for use.
    */
   private output: string;
@@ -40,11 +20,8 @@ export class Error {
    * @see ResponseParser.RESPONSE_PARSER_ERROR_PATTERN for details.
    */
   constructor(errorInfo: Array<any>) {
-    this.code = errorInfo[1];
-    this.cmdPos = errorInfo[2];
-    this.cmd = errorInfo[3];
-    this.text = errorInfo[4];
-    this.output = `MPD returned an error: ${this.text} (command: ${this.cmd}, code: ${this.code}, position: ${this.cmdPos})`;
+    const [code, cmdPos, cmd, text] = errorInfo;
+    this.output = `MPD returned an error: ${text} (command: ${cmd}, code: ${code}, position: ${cmdPos})`;
   }
 
 }

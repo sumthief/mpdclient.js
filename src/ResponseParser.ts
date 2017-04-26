@@ -1,19 +1,8 @@
 import { Command } from "./Command";
 import { CommandList } from "./CommandList";
 import { Error } from "./Error";
-import { IExecutable } from "./IExecutable";
 
 export class ResponseParser {
-
-  /**
-   * Response received from MPD server.
-   */
-  private response: string;
-
-  /**
-   * Command or CommandList which gave us response property.
-   */
-  private command: any;
 
   /**
    * Pattern to check if error exists and collect info about it.
@@ -22,10 +11,7 @@ export class ResponseParser {
    */
   static readonly RESPONSE_PARSER_ERROR_PATTERN: RegExp = /^ACK\s\[(\d+)@([^\]]+)\]\s\{([^\}]*)\}\s(.+)$/gm;
 
-  constructor(response: string, command: IExecutable) {
-    this.response = response;
-    this.command = command;
-  }
+  constructor(private response: string, private command: any) { }
 
   /**
    * The only one public method which is also an entrypoint.
@@ -64,8 +50,11 @@ export class ResponseParser {
    *   Array of built objects.
    */
   private processCommand(resolve: any = null) {
-    let command = this.command.getCommand();
-    let result = this.parseResponse(this.getCommandDelimiters()[command] || []);
+    let processedDelimiters = {};
+    (this.getCommandDelimiters()[this.command.getCommand()] || []).forEach((v, i) => {
+      processedDelimiters[v] = null;
+    });
+    let result = this.parseResponse(processedDelimiters);
 
     if (resolve) {
       resolve({response: result, type: 'command'});
@@ -99,15 +88,15 @@ export class ResponseParser {
         });
     }
     else {
-      let commandDelimiters = [];
+      let commandDelimiters = {};
       this.command
         .getCommands()
         .forEach((value, index) => {
           // Collect delimiters for each command from set of commands.
           // This will allow us parse response correct.
-          commandDelimiters = commandDelimiters.concat(
-            (this.getCommandDelimiters()[value.getCommand()] || []).filter(item => (commandDelimiters.indexOf(item) < 0))
-          );
+          if (!commandDelimiters[value.getCommand()]) {
+            commandDelimiters[value.getCommand()] = this.getCommandDelimiters()[value.getCommand()] || {};
+          }
         });
       result = this.parseResponse(commandDelimiters);
     }
@@ -133,20 +122,20 @@ export class ResponseParser {
     let data = global['mpdCommandDelimiters'] || {};
     if (~Object.keys(data).length) {
       [
-        [['lsinfo', 'listall', 'listallinfo'], ['file', 'directory', 'playlist']],
-        [['listfiles'], ['file', 'directory']],
-        [['update', 'rescan'], ['updating_db']],
-        [['commands', 'notcommands'], ['command']],
-        [['listplaylists'], ['playlist']],
-        [['currentsong', 'playlistinfo', 'listplaylist', 'listplaylistinfo', 'playlistid'], ['file']],
-        [['idle'], ['changed']],
-        [['tagtype'], ['tagtype']],
-        [['decoders'], ['plugin']],
-        [['status'], ['volume']],
-        [['stats'], ['uptime']],
+        {commands: ['lsinfo', 'listall', 'listallinfo'], delimiters: ['file', 'directory', 'playlist']},
+        {commands: ['listfiles'], delimiters: ['file', 'directory']},
+        {commands: ['update', 'rescan'], delimiters: ['updating_db']},
+        {commands: ['commands', 'notcommands'], delimiters: ['command']},
+        {commands: ['listplaylists'], delimiters: ['playlist']},
+        {commands: ['currentsong', 'playlistinfo', 'listplaylist', 'listplaylistinfo', 'playlistid'], delimiters: ['file']},
+        {commands: ['idle'], delimiters: ['changed']},
+        {commands: ['tagtype'], delimiters: ['tagtype']},
+        {commands: ['decoders'], delimiters: ['plugin']},
+        {commands: ['status'], delimiters: ['volume']},
+        {commands: ['stats'], delimiters: ['uptime']},
       ].forEach((value, index) => {
-        value[0].forEach((v, i) => {
-          data[v] = value[1];
+        value['commands'].forEach((v, i) => {
+          data[v] = value['delimiters'];
         });
       });
       global['mpdCommandDelimiters'] = data;
@@ -166,17 +155,14 @@ export class ResponseParser {
    *
    * @see getCommandDelimiters().
    */
-  private parseResponse(commandDelimiters: string[]): object[] {
+  private parseResponse(commandDelimiters: object): object[] {
     let result = [];
     let obj = {};
     this.response
       .split('\n')
       .forEach((val, index) => {
         let [key, value] = val.split(': ');
-        let isDelimiterKey = commandDelimiters.reduce((prev, current, index, src) => {
-          return prev || current === key;
-        }, false);
-        if (isDelimiterKey && Object.keys(obj).length !== 0) {
+        if (commandDelimiters[key] !== void 0 && Object.keys(obj).length !== 0) {
           result.push(obj);
           obj = {};
         }
