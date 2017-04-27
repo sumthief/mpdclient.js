@@ -14,8 +14,7 @@ export class Error {
   /**
    * Constructs an error.
    *
-   * @param {[string|number]} errorInfo
-   *   Array of strings and numbers describing returned error.
+   * @param {[string|number]} errorInfo - Array of strings and numbers describing returned error.
    *
    * @see ResponseParser.RESPONSE_PARSER_ERROR_PATTERN for details.
    */

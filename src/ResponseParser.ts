@@ -11,6 +11,12 @@ export class ResponseParser {
    */
   static readonly RESPONSE_PARSER_ERROR_PATTERN: RegExp = /^ACK\s\[(\d+)@([^\]]+)\]\s\{([^\}]*)\}\s(.+)$/gm;
 
+  /**
+   * Creates new response parser.
+   *
+   * @param {string} response - Response from MPD server.
+   * @param {*} command - Command or CommandList.
+   */
   constructor(private response: string, private command: any) { }
 
   /**
@@ -43,13 +49,11 @@ export class ResponseParser {
    * This command applies for parsing response for single Command
    * or command from CommandList with command_list_ok_begin mode.
    *
-   * @param {*} resolve
-   *   Resolve callback or null. If null passed it means that we parse command from CL.
+   * @param {*} resolve - Resolve callback or null. If null passed then it means that we parses command from CL.
    *
-   * @returns {*}
-   *   Array of built objects.
+   * @returns {*[]} - Array of built objects.
    */
-  private processCommand(resolve: any = null) {
+  private processCommand(resolve: any = null): object[] {
     let processedDelimiters = {};
     (this.getCommandDelimiters()[this.command.getCommand()] || []).forEach((v, i) => {
       processedDelimiters[v] = null;
@@ -67,8 +71,7 @@ export class ResponseParser {
   /**
    * Process response for command list.
    *
-   * @param {function} resolve
-   *   Resolve callback.
+   * @param {function} resolve - Resolve callback.
    */
   private processCommandList(resolve: any) {
     let result = [];
@@ -112,13 +115,12 @@ export class ResponseParser {
    * single-row output).
    * So we need set of uniq keys for each command.
    *
-   * @returns {Array}
-   *   Array of delimiter keys.
+   * @returns {object} - Delimiters merged into united array.
    *
    * @todo: Check other commands output.
    * @todo: Maybe it should be generated when server started for reducing first request handle time.
    */
-  private getCommandDelimiters(): any[] {
+  private getCommandDelimiters(): object {
     let data = global['mpdCommandDelimiters'] || {};
     if (~Object.keys(data).length) {
       [
@@ -147,11 +149,9 @@ export class ResponseParser {
   /**
    * Parse response and return array of objects.
    *
-   * @param {Array} commandDelimiters
-   *   Array of strings.
+   * @param {object} commandDelimiters - delimiters merged to united object.
    *
-   * @returns {Array}
-   *   Array of objects.
+   * @returns {object[]} - Array of objects.
    *
    * @see getCommandDelimiters().
    */

@@ -43,15 +43,12 @@ export class CommandList implements IExecutable {
   static readonly COMMAND_LIST_OK_SEPARATOR: RegExp = /^list_OK$/gm;
 
   /**
-   * Create command list.
+   * Creates command list.
    *
-   * @param {Array} commands
-   *   Array of Command objects.
-   * @param {string} mode
-   *   Mode of command list execution. This param impact on response returned from MPD.
+   * @param {Array} commands - Array of Command objects.
+   * @param {string} mode - Mode of command list execution. This param impact on response returned from MPD.
    *
-   * @return {object}
-   *   Exemplar of CommandList object.
+   * @return {object} - Exemplar of CommandList object.
    *
    * @see https://www.musicpd.org/doc/protocol/command_lists.html for details.
    */
@@ -60,8 +57,7 @@ export class CommandList implements IExecutable {
   /**
    * Getter for commands.
    *
-   * @returns {Array}
-   *   Commands array.
+   * @returns {Array} - Command list`s commands.
    */
   public getCommands(): Command[] {
     return this.commands;
@@ -70,15 +66,21 @@ export class CommandList implements IExecutable {
   /**
    * Getter for mode.
    *
-   * @returns {string}
-   *   Mode.
+   * @returns {string} - Command list mode.
    */
   public getMode(): string {
     return this.mode;
   }
 
   /**
-   * @inheritDoc
+   * Build command list query. It should have next form:
+   *    (command_list_begin|command_list_begin_ok)\n
+   *    command1_query\n
+   *    command2_query\n
+   *    commandN_query\n
+   *    command_list_end\n
+   *
+   * @return {string} - Built query.
    */
   public buildQuery(): string {
     if (!this.query) {

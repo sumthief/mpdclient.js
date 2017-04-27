@@ -8,8 +8,7 @@ export interface IExecutable {
   /**
    * Build query string.
    *
-   * @return string
-   *   Built query string.
+   * @return string - Built query string.
    */
   buildQuery(): string;
 

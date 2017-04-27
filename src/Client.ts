@@ -4,20 +4,26 @@
 import { IExecutable } from "./IExecutable";
 import { ResponseParser } from "./ResponseParser";
 import * as net from "net";
+import {Socket} from "net";
 
 export class Client {
 
   // @todo: Add tracking of idle status.
 
+  /**
+   * Creates new client.
+   *
+   * @param {string} host - Hostname of MPD server.
+   * @param {number} port - Port of MPD server.
+   */
   constructor(private host: string, private port: number) { }
 
   /**
    * Create socket; connect and handle base response from server.
    *
-   * @returns {Promise<T>|Promise}
-   *   Promise which will pass connected socket with already handled start message or it will reject an error.
+   * @returns {Promise<(Socket|string)>} - Promise obj with connected socket, error otherwise.
    */
-  private connect() {
+  private connect(): Promise<(Socket|string)> {
     return new Promise((resolve: any, reject: any) => {
       // As NodeJS works in async mode we can't store socket as
       // class property.
@@ -39,15 +45,13 @@ export class Client {
   }
 
   /**
-   * Execute Command or CommandList.
+   * Execute IExecutable object.
    *
-   * @param {*} command
-   *   Command or CommandList exemplar.
+   * @param {IExecutable} command - Command or CommandList exemplar.
    *
-   * @returns {Promise<T>|Promise}
-   *   Promise which will return parsed response or it will reject an error.
+   * @returns {Promise<string>} - Promise which will return parsed response or it will reject with an error.
    */
-  public execute(command: IExecutable) {
+  public execute(command: IExecutable): Promise<string> {
     return new Promise((resolve: any, reject: any) => {
       // Connect to sever and if success execute an command and close socket.
       this

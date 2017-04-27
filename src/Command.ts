@@ -7,10 +7,23 @@ export class Command implements IExecutable {
    */
   public query: string;
 
-  constructor(private command: string, private args: any[] = []) { }
+  /**
+   * Creates new command.
+   *
+   * @param {string} command - Command for execution.
+   * @param {*[]} args - Optional arguments for
+   *
+   * @constructor
+   */
+  constructor(private command: string, private args: any[] = []) {
+    this.command = command.trim();
+  }
 
   /**
-   * @inheritDoc
+   * Query should have this form:
+   *  command\t"arg1"\t"arg2"\t"arg3"\t"argN"\n
+   *
+   * @return {string} - Built query.
    */
   public buildQuery(): string {
     if (!this.query) {
@@ -27,8 +40,7 @@ export class Command implements IExecutable {
   /**
    * Getter for args prop.
    *
-   * @returns {any}
-   *   Array of args.
+   * @returns {*} - Array of args.
    */
   public getArgs(): any[] {
     return this.args;
@@ -37,8 +49,7 @@ export class Command implements IExecutable {
   /**
    * Getter for command prop.
    *
-   * @returns {any}
-   *   Command string.
+   * @returns {*} - Command string.
    */
   public getCommand(): string {
     return this.command;
