@@ -168,16 +168,18 @@ export class ResponseParser {
         }
         // This allow us build correct response for structure with multiple keys
         // related to one object. See response of decoders command for example.
-        if (typeof obj[key] !== 'undefined') {
-          if (Array.isArray(obj[key])) {
-            obj[key].push(value);
+        if (key) {
+          if (typeof obj[key] !== 'undefined') {
+            if (Array.isArray(obj[key])) {
+              obj[key].push(value);
+            }
+            else {
+              obj[key] = [obj[key], value];
+            }
           }
           else {
-            obj[key] = [obj[key], value];
+            obj[key] = value;
           }
-        }
-        else {
-          obj[key] = value;
         }
       });
     // Don't forget about last iteration.
