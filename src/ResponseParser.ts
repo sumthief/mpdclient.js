@@ -1,3 +1,5 @@
+///<reference path="../node_modules/@types/node/index.d.ts"/>
+
 import { Command } from "./Command";
 import { CommandList } from "./CommandList";
 import { Error } from "./Error";
@@ -30,7 +32,7 @@ export class ResponseParser {
    * @returns {Array}
    *   Array of object (case when we parse single command from CommandList).
    */
-  public parse(resolve: any = null, reject: any = null) {
+  parse(resolve: any = null, reject: any = null) {
     let errorInfo: any = ResponseParser.RESPONSE_PARSER_ERROR_PATTERN.exec(this.response);
     if (errorInfo) {
       reject(new Error(errorInfo));

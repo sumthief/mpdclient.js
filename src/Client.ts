@@ -51,7 +51,7 @@ export class Client {
    *
    * @returns {Promise<string>} - Promise which will return parsed response or it will reject with an error.
    */
-  public execute(command: IExecutable): Promise<string> {
+  execute(command: IExecutable): Promise<string> {
     return new Promise((resolve: any, reject: any) => {
       // Connect to sever and if success execute an command and close socket.
       this

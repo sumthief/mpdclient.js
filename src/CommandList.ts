@@ -6,7 +6,7 @@ export class CommandList implements IExecutable {
   /**
    * @inheritDoc
    */
-  public query: string;
+  query: string;
 
   /**
    * One of allowed modes for work with command list in MPD.
@@ -59,7 +59,7 @@ export class CommandList implements IExecutable {
    *
    * @returns {Array} - Command list`s commands.
    */
-  public getCommands(): Command[] {
+  getCommands(): Command[] {
     return this.commands;
   }
 
@@ -68,7 +68,7 @@ export class CommandList implements IExecutable {
    *
    * @returns {string} - Command list mode.
    */
-  public getMode(): string {
+  getMode(): string {
     return this.mode;
   }
 
@@ -82,7 +82,7 @@ export class CommandList implements IExecutable {
    *
    * @return {string} - Built query.
    */
-  public buildQuery(): string {
+  buildQuery(): string {
     if (!this.query) {
       let chunks: string[] = [ this.getMode() ];
       this.getCommands().forEach((value: Command, index: number) => {

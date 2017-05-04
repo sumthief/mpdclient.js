@@ -5,7 +5,7 @@ export class Command implements IExecutable {
   /**
    * @inheritDoc
    */
-  public query: string;
+  query: string;
 
   /**
    * Creates new command.
@@ -25,7 +25,7 @@ export class Command implements IExecutable {
    *
    * @return {string} - Built query.
    */
-  public buildQuery(): string {
+  buildQuery(): string {
     if (!this.query) {
       let chunks = [this.command];
       this.args.forEach((value, index) => {
@@ -42,7 +42,7 @@ export class Command implements IExecutable {
    *
    * @returns {*} - Array of args.
    */
-  public getArgs(): any[] {
+  getArgs(): any[] {
     return this.args;
   }
 
@@ -51,7 +51,7 @@ export class Command implements IExecutable {
    *
    * @returns {*} - Command string.
    */
-  public getCommand(): string {
+  getCommand(): string {
     return this.command;
   }
 
