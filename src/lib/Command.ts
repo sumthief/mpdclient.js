@@ -1,6 +1,6 @@
 import {IExecutable} from "./IExecutable";
 
-export class Command implements IExecutable {
+class Command implements IExecutable {
 
   /**
    * @inheritDoc
@@ -56,3 +56,5 @@ export class Command implements IExecutable {
   }
 
 }
+
+export { Command as MPDCommand };

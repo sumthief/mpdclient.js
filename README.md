@@ -1,4 +1,4 @@
-# mpdclient.js
+# mpdclient.js [![Build Status](https://travis-ci.org/sumthief/mpdclient.js.svg?branch=master)](https://travis-ci.org/sumthief/mpdclient.js)
 
 Yet another MPD client for NodeJS.
 

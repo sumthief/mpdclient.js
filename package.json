@@ -1,11 +1,10 @@
 {
   "name": "mpdclient.js",
-  "version": "0.0.6",
-  "description": "Yet another MPD client for NodeJS.",
-  "dependencies": {
+  "version": "0.0.13",
+  "description": "Yet another MPD client for NodeJS. Provides Promise-based API for interraction with MPD server.",
+  "devDependencies": {
     "@types/es6-promise": "0.0.32",
     "@types/node": "^7.0.12",
-    "express": "^4.15.2",
     "typescript": "^2.3.2"
   },
   "scripts": {
@@ -18,9 +17,13 @@
   "keywords": [
     "mpd",
     "client",
-    "promise"
+    "promise",
+    "typescript"
   ],
-  "author": "sumthief (https://github.com/sumthief)",
+  "author": {
+    "name": "sumthief",
+    "url": "http://github.com/sumthief"
+  },
   "license": "GPL-2.0",
   "bugs": {
     "url": "https://github.com/sumthief/mpdclient.js/issues"
