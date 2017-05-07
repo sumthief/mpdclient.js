@@ -1,7 +1,7 @@
 ///<reference path="../node_modules/@types/node/index.d.ts"/>
 
-import { Command } from "./Command";
-import { CommandList } from "./CommandList";
+import { MPDCommand as Command } from "./Command";
+import { MPDCommandList as CommandList } from "./CommandList";
 import { Error } from "./Error";
 
 export class ResponseParser {

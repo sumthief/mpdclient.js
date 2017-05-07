@@ -6,7 +6,7 @@ import { ResponseParser } from "./ResponseParser";
 import * as net from "net";
 import {Socket} from "net";
 
-export class Client {
+class Client {
 
   // @todo: Add tracking of idle status.
 
@@ -81,3 +81,5 @@ export class Client {
     });
   }
 }
+
+export { Client as MPDClient };
