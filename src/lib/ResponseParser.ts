@@ -1,4 +1,4 @@
-///<reference path="../node_modules/@types/node/index.d.ts"/>
+///<reference path="../../node_modules/@types/node/index.d.ts"/>
 
 import { MPDCommand as Command } from "./Command";
 import { MPDCommandList as CommandList } from "./CommandList";
