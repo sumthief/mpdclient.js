@@ -10,17 +10,7 @@ script:
 before_deploy:
   - npm i -g json
   - npm run build
-  - mkdir dist/src
-  - mv dist/*.js dist/src
-  - cp package.json dist/ && cp README.md dist
-  - cd dist && npm uninstall --save typescript
-  - rm -rf node_modules
-  - json -I -f package.json -e 'this.keywords=this.keywords.filter(item => item !== "typescript")'
-  - >
-    echo "'use strict';
-    module.exports.MPDClient = require('src/Client').MPDClient;
-    module.exports.MPDCommand = require('src/Command').MPDCommand;
-    module.exports.MPDCommandList = require('src/CommandList').MPDCommandList;" > index.js
+  - ./prepare_deploy.sh
 deploy:
   skip_cleanup: true
   provider: npm
@@ -28,4 +18,4 @@ deploy:
   api_key:
     secure: VYici0Fyb6vaZCr4BWhdRnoIx2eF2gQDnYCxL2ca9azV5yh/TvWk+YERZoh9XRg9pFbqdMkrvU9/EQzQykt9zRcPPbF4xrvHsy4OjNc77g04oUYOqSml4ruHq7NQol/Y5zJd6ERAAHCRZtWhgRPS6LU7iSkk78RGUykftUzxzyzJyZhALYJsswGElY3RSDm9+IxZ9laF/vvhDKzGf+tw56sqMEHOLZllM/0zQZs/bYkmwAi7H96p45VqY6n5eJ9aFQy7qM+G//dmHJU1jgXyA9U1cXbgaAdAvb5IDDomZUvp/Nqh34fDSCjeu/q7gVUh6TcB2kA9saQe2oK5HBt6qXoCwB0YjezwIAD7fI487QUzdPQpl3uDCgKxsWCD7PT3NTf+lhe/IU+gNIMf3wjb32tM1bU6BcKOAi4O2sdJY3ZaAVhdQl0R0Fu6KG20yWMONmo851YkpeH+k+J8xYD5ZyDSKKvLojTuW+L9eus9AM7lq8eZ/WecpOSvDHYevrNN2B4iAYJmYGQxU+zXASAg5MhF0HMzMT4v0kDgH3QnS0OjILX2yoSraiRYi04ji9w4j2uBnPONKNTltHd4xOOiIAXVe/vyCbjWfbOGz1PIJ65NeCK8PVWYdGIDFDvb/DAHI5H0C2AZKrswDbMZua4+avlW7dYgavNM4JBW0bpdRkE=
   on:
-    branch: master
+    branch: tags

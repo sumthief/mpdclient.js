@@ -1,6 +1,6 @@
 {
   "name": "mpdclient.js",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Yet another MPD client for NodeJS. Provides Promise-based API for interraction with MPD server.",
   "dependencies": {
     "@types/es6-promise": "0.0.32",
