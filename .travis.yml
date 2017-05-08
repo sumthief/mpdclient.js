@@ -22,6 +22,7 @@ before_deploy:
     module.exports.MPDCommand = require('src/Command').MPDCommand;
     module.exports.MPDCommandList = require('src/CommandList').MPDCommandList;" > index.js
 deploy:
+  skip_cleanup: true
   provider: npm
   email: "shlyapkin.g@gmail.com"
   api_key:
