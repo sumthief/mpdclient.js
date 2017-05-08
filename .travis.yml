@@ -4,11 +4,11 @@ node_js:
   - 7
 install:
   - npm install tsc -g
+  - npm install
 script:
   - npm run build
 before_deploy:
   - npm i -g json
-  - tsc -v
   - npm run build
   - mkdir dist/src
   - mv dist/*.js dist/src
