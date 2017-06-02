@@ -184,8 +184,10 @@ export class ResponseParser {
           }
         }
       });
-    // Don't forget about last iteration.
-    result.push(obj);
+    // Don't forget about last iteration. But we don't need to store empty object.
+    if (Object.keys(obj).length) {
+      result.push(obj);
+    }
 
     return result;
   }
