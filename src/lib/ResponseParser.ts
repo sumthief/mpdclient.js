@@ -3,6 +3,7 @@
 import { MPDCommand as Command } from "./Command";
 import { MPDCommandList as CommandList } from "./CommandList";
 import { Error } from "./Error";
+import {objIsEmpty} from './Util';
 
 export class ResponseParser {
 
@@ -33,14 +34,12 @@ export class ResponseParser {
    *   Array of object (case when we parse single command from CommandList).
    */
   parse(resolve: any = null, reject: any = null) {
-    let errorInfo: any = ResponseParser.RESPONSE_PARSER_ERROR_PATTERN.exec(this.response);
+    const errorInfo = ResponseParser.RESPONSE_PARSER_ERROR_PATTERN.exec(this.response);
     if (errorInfo) {
       reject(new Error(errorInfo));
     }
 
-    this.response = this.response
-      .replace(/^OK$/gm, '')
-      .trim();
+    this.response = this.response.replace(/^OK$/gm, '').trim();
 
     return this.command instanceof Command ? this.processCommand(resolve) : this.processCommandList(resolve);
   }
@@ -53,19 +52,20 @@ export class ResponseParser {
    *
    * @param {*} resolve - Resolve callback or null. If null passed then it means that we parses command from CL.
    *
-   * @returns {*[]} - Array of built objects.
+   * @returns {*[]|void} - Array of built objects/resolves promise.
    */
-  private processCommand(resolve: any = null): object[] {
-    let processedDelimiters = {};
-    (this.getCommandDelimiters()[this.command.getCommand()] || []).forEach((v, i) => {
-      processedDelimiters[v] = null;
-    });
-    let result = this.parseResponse(processedDelimiters);
+  private processCommand(resolve: any = null): any[]|void {
+    const cmd = this.command.getCommand();
+    const delimiters = this.getCommandDelimiters[cmd] || [];
+    const processedDelimiters = delimiters.reduce((prev, current) => {
+      prev[current] = null;
+      return prev;
+    }, {});
+    const result = this.parseResponse(processedDelimiters);
 
     if (resolve) {
-      resolve({response: result, type: 'command'});
-    }
-    else {
+      resolve({ response: result, type: 'command' });
+    } else {
       return result;
     }
   }
@@ -75,34 +75,31 @@ export class ResponseParser {
    *
    * @param {function} resolve - Resolve callback.
    */
-  private processCommandList(resolve: any) {
-    let result = [];
+  private processCommandList(resolve: any): void {
+    let result;
+    const commands = this.command.getCommands();
     // This case is pretty simple: just split response by delimiter and
     // parse separated response in mapping with set of commands.
     if (this.command.getMode() === CommandList.COMMAND_LIST_OK_BEGIN) {
-      let commands = this.command.getCommands();
-      this.response
+      result = this.response
         .split(CommandList.COMMAND_LIST_OK_SEPARATOR)
         .filter(item => item)
         .map(item => item.trim())
-        .forEach((value, index) => {
-          result.push({
-            response: new ResponseParser(value, commands[index]).parse(),
-            command: commands[index].getCommand()
-          })
-        });
-    }
-    else {
-      let commandDelimiters = {};
-      this.command
-        .getCommands()
-        .forEach((value, index) => {
-          // Collect delimiters for each command from set of commands.
-          // This will allow us parse response correct.
-          if (!commandDelimiters[value.getCommand()]) {
-            commandDelimiters[value.getCommand()] = this.getCommandDelimiters()[value.getCommand()] || {};
-          }
-        });
+        .reduce((prev, current, index) => {
+          const cmd = commands[index];
+          prev.push({ response: new ResponseParser(current, cmd), command: cmd.getCommand() });
+          return prev;
+        }, []);
+    } else {
+      const commandDelimiters = commands.reduce((prev, current) => {
+        // Collect delimiters for each command from set of commands.
+        // This will allow us parse response correct.
+        if (typeof prev[current.getCommand()] === 'undefined') {
+          prev[current.getCommand()] = this.getCommandDelimiters()[current.getCommand()] || {};
+        }
+
+        return prev;
+      }, {});
       result = this.parseResponse(commandDelimiters);
     }
     resolve({response: result, type: 'commandList'});
@@ -122,9 +119,9 @@ export class ResponseParser {
    * @todo: Check other commands output.
    * @todo: Maybe it should be generated when server started for reducing first request handle time.
    */
-  private getCommandDelimiters(): object {
+  private getCommandDelimiters(): any {
     let data = global['mpdCommandDelimiters'] || {};
-    if (~Object.keys(data).length) {
+    if (objIsEmpty(data)) {
       [
         {commands: ['lsinfo', 'listall', 'listallinfo'], delimiters: ['file', 'directory', 'playlist']},
         {commands: ['listfiles'], delimiters: ['file', 'directory']},
@@ -137,10 +134,8 @@ export class ResponseParser {
         {commands: ['decoders'], delimiters: ['plugin']},
         {commands: ['status'], delimiters: ['volume']},
         {commands: ['stats'], delimiters: ['uptime']},
-      ].forEach((value, index) => {
-        value['commands'].forEach((v, i) => {
-          data[v] = value['delimiters'];
-        });
+      ].forEach(value => {
+        value['commands'].forEach(v => data[v] = value['delimiters']);
       });
       global['mpdCommandDelimiters'] = data;
     }
@@ -158,13 +153,14 @@ export class ResponseParser {
    * @see getCommandDelimiters().
    */
   private parseResponse(commandDelimiters: object): object[] {
-    let result = [];
-    let obj = {};
+    let result = [], obj = {};
     this.response
       .split('\n')
-      .forEach((val, index) => {
-        let [key, value] = val.split(': ');
-        if (commandDelimiters[key] !== void 0 && Object.keys(obj).length !== 0) {
+      .forEach(val => {
+        const [key, value] = val.split(': ');
+        const currentRowIsDelimiter = typeof commandDelimiters[key] !== 'undefined';
+        // If this row is delimiter then we need finalize our object and reset obj.
+        if (currentRowIsDelimiter && !objIsEmpty(obj)) {
           result.push(obj);
           obj = {};
         }
@@ -174,18 +170,16 @@ export class ResponseParser {
           if (typeof obj[key] !== 'undefined') {
             if (Array.isArray(obj[key])) {
               obj[key].push(value);
-            }
-            else {
+            } else {
               obj[key] = [obj[key], value];
             }
-          }
-          else {
+          } else {
             obj[key] = value;
           }
         }
       });
     // Don't forget about last iteration. But we don't need to store empty object.
-    if (Object.keys(obj).length) {
+    if (!objIsEmpty(obj)) {
       result.push(obj);
     }
 
