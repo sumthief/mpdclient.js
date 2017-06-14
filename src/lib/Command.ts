@@ -27,11 +27,10 @@ class Command implements IExecutable {
    */
   buildQuery(): string {
     if (!this.query) {
-      let chunks = [this.command];
-      this.args.forEach((value, index) => {
-        chunks.push('"' + value.toString().replace('"', '\'') + '"');
-      });
-      this.query = chunks.join('\t') + '\n';
+      this.query = this.args.reduce((prev, item) => {
+        prev.push('"' + item.toString().replace('"', '\'') + '"');
+        return prev;
+      }, [this.command]).join('\t') + '\n';
     }
 
     return this.query;

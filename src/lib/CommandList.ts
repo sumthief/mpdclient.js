@@ -84,10 +84,10 @@ class CommandList implements IExecutable {
    */
   buildQuery(): string {
     if (!this.query) {
-      let chunks: string[] = [ this.getMode() ];
-      this.getCommands().forEach((value: Command, index: number) => {
-        chunks.push(value.buildQuery());
-      });
+      let chunks = this.getCommands().reduce((prev, cmd: Command) => {
+        prev.push(cmd.buildQuery());
+        return prev;
+      }, [ this.getMode() ]);
       chunks.push(CommandList.COMMAND_LIST_END);
       this.query = chunks.join('');
     }

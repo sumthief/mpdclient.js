@@ -26,7 +26,7 @@ class Client {
     return new Promise((resolve: any, reject: any) => {
       // As NodeJS works in async mode we can't store socket as
       // class property.
-      let socket = new Socket();
+      const socket = new Socket();
       socket.connect(this.port, this.host);
       // Force returning result in human-readable view to evade toString conversion.
       socket.setEncoding('utf8');

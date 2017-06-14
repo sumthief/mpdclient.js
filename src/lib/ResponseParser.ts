@@ -56,7 +56,7 @@ export class ResponseParser {
    */
   private processCommand(resolve: any = null): any[]|void {
     const cmd = this.command.getCommand();
-    const delimiters = this.getCommandDelimiters[cmd] || [];
+    const delimiters = this.getCommandDelimiters()[cmd] || [];
     const processedDelimiters = delimiters.reduce((prev, current) => {
       prev[current] = null;
       return prev;
@@ -91,11 +91,12 @@ export class ResponseParser {
           return prev;
         }, []);
     } else {
-      const commandDelimiters = commands.reduce((prev, current) => {
+      const commandDelimiters = commands.reduce((prev, cmd: Command) => {
+        const command = cmd.getCommand();
         // Collect delimiters for each command from set of commands.
         // This will allow us parse response correct.
-        if (typeof prev[current.getCommand()] === 'undefined') {
-          prev[current.getCommand()] = this.getCommandDelimiters()[current.getCommand()] || {};
+        if (typeof prev[command] === 'undefined') {
+          prev[command] = this.getCommandDelimiters()[command] || {};
         }
 
         return prev;
@@ -120,7 +121,7 @@ export class ResponseParser {
    * @todo: Maybe it should be generated when server started for reducing first request handle time.
    */
   private getCommandDelimiters(): any {
-    let data = global['mpdCommandDelimiters'] || {};
+    const data = global['mpdCommandDelimiters'] || {};
     if (objIsEmpty(data)) {
       [
         {commands: ['lsinfo', 'listall', 'listallinfo'], delimiters: ['file', 'directory', 'playlist']},
