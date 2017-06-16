@@ -3,7 +3,7 @@
 import { MPDCommand as Command } from "./Command";
 import { MPDCommandList as CommandList } from "./CommandList";
 import { Error } from "./Error";
-import {objIsEmpty} from './Util';
+import {objIsEmpty, objValues} from './Util';
 
 export class ResponseParser {
 
@@ -12,7 +12,22 @@ export class ResponseParser {
    *
    * @type {RegExp}
    */
-  static readonly RESPONSE_PARSER_ERROR_PATTERN: RegExp = /^ACK\s\[(\d+)@([^\]]+)\]\s\{([^\}]*)\}\s(.+)$/gm;
+  static readonly RESPONSE_PARSER_ERROR_PATTERN = /^ACK\s\[(\d+)@([^\]]+)\]\s\{([^\}]*)\}\s(.+)$/gm;
+
+  /**
+   * MPD returns strange mapping between input and ouput.
+   *
+   * @type {{[string]: string}}
+   */
+  static readonly RESPONSE_TAG_MAPPING = {
+    artist: 'Artist',
+    albumartist: 'AlbumArtist',
+    album: 'Album',
+    date: 'Date',
+    genre: 'Genre',
+    title: 'Title',
+    track: 'Track',
+  };
 
   /**
    * Creates new response parser.
@@ -56,7 +71,12 @@ export class ResponseParser {
    */
   private processCommand(resolve: any = null): any[]|void {
     const cmd = this.command.getCommand();
-    const delimiters = this.getCommandDelimiters()[cmd] || [];
+    let delimiters = this.getCommandDelimiters()[cmd] || [];
+    // Split response by primary filter.
+    if (cmd === 'list') {
+      const filter = this.command.getArgs()[0];
+      delimiters = [ResponseParser.RESPONSE_TAG_MAPPING[filter]];
+    }
     const processedDelimiters = delimiters.reduce((prev, current) => {
       prev[current] = null;
       return prev;
@@ -135,6 +155,7 @@ export class ResponseParser {
         {commands: ['decoders'], delimiters: ['plugin']},
         {commands: ['status'], delimiters: ['volume']},
         {commands: ['stats'], delimiters: ['uptime']},
+        {commands: ['list'], delimiters: objValues(ResponseParser.RESPONSE_TAG_MAPPING)}
       ].forEach(value => {
         value['commands'].forEach(v => data[v] = value['delimiters']);
       });
@@ -153,7 +174,7 @@ export class ResponseParser {
    *
    * @see getCommandDelimiters().
    */
-  private parseResponse(commandDelimiters: object): object[] {
+  private parseResponse(commandDelimiters: any): any[] {
     let result = [], obj = {};
     this.response
       .split('\n')
@@ -167,7 +188,7 @@ export class ResponseParser {
         }
         // This allow us build correct response for structure with multiple keys
         // related to one object. See response of decoders command for example.
-        if (key) {
+        if (key && value) {
           if (typeof obj[key] !== 'undefined') {
             if (Array.isArray(obj[key])) {
               obj[key].push(value);
