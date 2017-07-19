@@ -102,12 +102,11 @@ export class ResponseParser {
     // parse separated response in mapping with set of commands.
     if (this.command.getMode() === CommandList.COMMAND_LIST_OK_BEGIN) {
       result = this.response
-        .split(CommandList.COMMAND_LIST_OK_SEPARATOR)
-        .filter(item => item)
+        .split(CommandList.COMMAND_LIST_OK_SEPARATOR, commands.length)
         .map(item => item.trim())
         .reduce((prev, current, index) => {
           const cmd = commands[index];
-          prev.push({ response: new ResponseParser(current, cmd), command: cmd.getCommand() });
+          prev.push({ response: new ResponseParser(current, cmd).parse(), command: cmd.getCommand() });
           return prev;
         }, []);
     } else {
