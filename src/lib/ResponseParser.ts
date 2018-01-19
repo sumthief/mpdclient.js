@@ -167,7 +167,8 @@ export class ResponseParser {
                         'listplaylist',
                         'listplaylistinfo',
                         'playlistid',
-                        'search'
+                        'search',
+                        'find'
                     ],
                     delimiters: ['file']
                 },
