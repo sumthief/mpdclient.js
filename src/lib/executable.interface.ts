@@ -1,4 +1,4 @@
-export interface IExecutable {
+export interface Executable {
     /**
      * Query string which will be written to socket.
      */

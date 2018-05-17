@@ -1,7 +1,7 @@
 /// <reference.d='/node_modules/@types/node/index.d.ts' />
 /// <reference.d='/node_modules/@types/es6-promise/index.d.ts' />
 
-import { IExecutable } from './IExecutable';
+import { Executable } from './executable.interface';
 import { ResponseParser } from './ResponseParser';
 import { Socket } from 'net';
 
@@ -22,7 +22,7 @@ class Client {
      * @returns {Promise<(Socket|string)>} - Promise obj with connected socket, error otherwise.
      */
     private connect(): Promise<Socket | string> {
-        return new Promise((resolve: any, reject: any) => {
+        return new Promise((resolve, reject) => {
             // As NodeJS works in async mode we can't store socket as
             // class property.
             const socket = new Socket();
@@ -43,14 +43,14 @@ class Client {
     }
 
     /**
-     * Execute IExecutable object.
+     * Execute Executable object.
      *
-     * @param {IExecutable} command - Command or CommandList exemplar.
+     * @param {Executable} command - Command or CommandList exemplar.
      *
      * @returns {Promise<string>} - Promise which will return parsed response or it will reject with an error.
      */
-    execute(command: IExecutable): Promise<string> {
-        return new Promise((resolve: any, reject: any) => {
+    execute(command: Executable): Promise<string> {
+        return new Promise((resolve, reject) => {
             // Connect to sever and if success execute an command and close socket.
             this.connect().then(
                 (socket: any) => {

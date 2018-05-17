@@ -1,6 +1,6 @@
-import { IExecutable } from './IExecutable';
+import { Executable } from './executable.interface';
 
-class Command implements IExecutable {
+class Command implements Executable {
     /**
      * @inheritDoc
      */

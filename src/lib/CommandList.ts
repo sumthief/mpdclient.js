@@ -1,7 +1,7 @@
-import { IExecutable } from './IExecutable';
+import { Executable } from './executable.interface';
 import { MPDCommand as Command } from './Command';
 
-class CommandList implements IExecutable {
+class CommandList implements Executable {
     /**
      * @inheritDoc
      */
